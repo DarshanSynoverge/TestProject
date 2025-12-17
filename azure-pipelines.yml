@@ -8,23 +8,32 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+# Install .NET 9 SDK
 - task: UseDotNet@2
+  displayName: 'Install .NET 9 SDK'
   inputs:
     packageType: 'sdk'
     version: '9.0.x'
 
-- script: dotnet restore src/WebApplication1/WebApplication1.sln
+# Restore using SOLUTION file
+- script: dotnet restore WebApplication1/WebApplication1.sln
   displayName: 'Restore'
 
-- script: dotnet build src/WebApplication1/WebApplication1.sln --configuration $(buildConfiguration)
+# Build
+- script: dotnet build WebApplication1/WebApplication1.sln \
+    --configuration $(buildConfiguration) \
+    --no-restore
   displayName: 'Build'
 
-- script: dotnet publish src/WebApplication1/WebApplication1.sln \
+# Publish
+- script: dotnet publish WebApplication1/WebApplication1.sln \
     --configuration $(buildConfiguration) \
     --output $(Build.ArtifactStagingDirectory)
   displayName: 'Publish'
 
+# Publish artifact
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
